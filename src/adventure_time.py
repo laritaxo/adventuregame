@@ -18,6 +18,11 @@ class State(Enum):
     NEW_GAME = auto()
     EXIT = auto()
 
+#  class Bag(enum):
+    #  MONEY =,
+    #  TICKET,
+    #  BOOK,
+
 
 def function(arg1):
     """TODO: Docstring for function.
@@ -30,7 +35,7 @@ def function(arg1):
 
 
 class Player:
-    # TODO: name is an optinal feature
+    # TODO: 'name' is an optinal feature yet to implement
     # name = random.choice(["John", "Jane"])
     bag = {'money': 20, 'ticket': None, 'book': None}
     current_state = State.POTSDAM_HBF
