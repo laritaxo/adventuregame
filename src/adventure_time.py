@@ -19,26 +19,56 @@ class State(Enum):
     EXIT = auto()
 
 #  class Bag(enum):
-    #  MONEY =,
-    #  TICKET,
-    #  BOOK,
+    #  MONEY
+    #  TICKET
+    #  BOOK
 
 
-def function(arg1):
-    """TODO: Docstring for function.
-
-    :arg1: TODO
-    :returns: TODO
-
-    """
-    pass
+texts = {
+    State.START: {
+        "opening": "This is the game opening text"
+    },
+    State.POTSDAM_HBF: {
+        "opening": "This is the Potsdam Hbf opening text"
+    },
+    State.TICKET_AUTOMAT: {
+        "opening": "Ticket automat opening text"
+    },
+    State.TRAIN_1: {
+        "opening": "Train 1 opening text"
+    },
+    State.TRAIN_2: {
+        "opening": "Train 1 opening text"
+    },
+    State.TICKET_CONTROL: {
+        "opening": "Ticket control opening"
+    },
+    State.FEE: {
+        "opening": "Fee opening"
+    },
+    State.LIBRARY: {
+        "opening": "Library opening"
+    },
+    State.BOOK: {
+        "opening": "Book opening"
+    },
+    State.COFFEE: {
+        "opening": "Coffee opening"
+    },
+    State.NEW_GAME: {
+        "opening": "New game opening"
+    },
+    State.EXIT: {
+        "opening": "Exit opening"
+    }
+}
 
 
 class Player:
     # TODO: 'name' is an optinal feature yet to implement
     # name = random.choice(["John", "Jane"])
     bag = {'money': 20, 'ticket': None, 'book': None}
-    current_state = State.POTSDAM_HBF
+    state = State.POTSDAM_HBF
 
     # TODO: Only necessary if name field is used
     # def __init__(self, name):
@@ -48,30 +78,45 @@ class Player:
     def inspect_bag(self):
         pass
 
-    def has_ticket(self):
-        return self.bag['ticket'] is not None
+    def get_state(self):
+        return self.state.name
 
-    def get_current_state(self):
-        return self.current_state.name
+    def set_state(self, state):
+        self.current_state = state
 
-    def check_money(self):
+    def get_money(self):
         return self.bag['money']
+
+    def set_money(self, amount):
+        self.bag['money'] = amount
 
     def put_ticket_into_bag(self):
         self.bag['ticket'] = True
 
+    def has_ticket(self):
+        return self.bag['ticket'] is not None
 
-def start_game():
+
+def initialize_player():
     # TODO: Opening text missing
     print("Opening text")
     # TODO: Read name from stdin
     return Player()
 
 
-def game_loop(player):
+def text_printer(state):
+    print(texts[state])
+
+
+def game_loop():
+    # Set the game's state initially to START
+    current_state = State.START
+
+    # The main game loop
     while True:
-        current_state = player.get_current_state()
-        if current_state is State.POTSDAM_HBF:
+        if current_state is State.START:
+            player = initialize_player()
+        elif current_state is State.POTSDAM_HBF:
             pass
         elif current_state is State.TICKET_AUTOMAT:
             pass
@@ -89,21 +134,16 @@ def game_loop(player):
             pass
         elif current_state is State.COFFEE_TRINKING:
             pass
+        elif current_state is State.NEW_GAME:
+            pass
         elif current_state is State.EXIT:
             break
 
+        current_state = player.get_state()
+
 
 def main():
-    new_round = True
-
-    while new_round:
-
-        # Start the game and initialize all objects
-        player = start_game()
-
-        game_loop(player)
-
-        new_round = new_round()
+    game_loop()
 
 
 if __name__ == "__main__":
