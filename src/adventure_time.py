@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from enum import Enum, auto
-#  import random
+import random
 
 
 class State(Enum):
@@ -13,8 +13,8 @@ class State(Enum):
     TICKET_CONTROL = auto()
     FEE = auto()
     LIBRARY = auto()
-    COFFEE_TRINKING = auto()
-    BOOK_READING = auto()
+    COFFEE = auto()
+    BOOK = auto()
     NEW_GAME = auto()
     EXIT = auto()
 
@@ -26,40 +26,51 @@ class State(Enum):
 
 texts = {
     State.START: {
-        "opening": "This is the game opening text"
+        "opening": "This is the game opening text",
+        "query": ""
     },
     State.POTSDAM_HBF: {
-        "opening": "This is the Potsdam Hbf opening text"
+        "opening": "This is the Potsdam Hbf opening text",
+        "query": "What do you want to do?",
     },
     State.TICKET_AUTOMAT: {
-        "opening": "Ticket automat opening text"
+        "opening": "Ticket automat opening text",
+        "query": "Do you want to play another round?"
     },
     State.TRAIN_1: {
-        "opening": "Train 1 opening text"
+        "opening": "Train 1 opening text",
+        "query": "Do you want to play another round?"
     },
     State.TRAIN_2: {
-        "opening": "Train 1 opening text"
+        "opening": "Train 1 opening text",
+        "query": "Do you want to play another round?"
     },
     State.TICKET_CONTROL: {
-        "opening": "Ticket control opening"
+        "opening": "Ticket control opening",
+        "query": "Do you want to play another round?"
     },
     State.FEE: {
-        "opening": "Fee opening"
+        "opening": "Fee opening",
+        "query": "Do you want to play another round?"
     },
     State.LIBRARY: {
-        "opening": "Library opening"
+        "opening": "Library opening",
+        "query": "Do you want to play another round?"
     },
     State.BOOK: {
-        "opening": "Book opening"
+        "opening": "Book opening",
+        "query": "Do you want to play another round?"
     },
     State.COFFEE: {
-        "opening": "Coffee opening"
+        "opening": "Coffee opening",
+        "query": "Do you want to play another round?"
     },
     State.NEW_GAME: {
-        "opening": "New game opening"
+        "opening": "You are about to exit the game.",
+        "query": "Do you want to play another round?"
     },
     State.EXIT: {
-        "opening": "Exit opening"
+        "opening": "Bye! Until next time.",
     }
 }
 
@@ -79,10 +90,10 @@ class Player:
         pass
 
     def get_state(self):
-        return self.state.name
+        return self.state
 
     def set_state(self, state):
-        self.current_state = state
+        self.state = state
 
     def get_money(self):
         return self.bag['money']
@@ -98,52 +109,166 @@ class Player:
 
 
 def initialize_player():
-    # TODO: Opening text missing
-    print("Opening text")
-    # TODO: Read name from stdin
     return Player()
 
 
-def text_printer(state):
-    print(texts[state])
+def scene_description(state):
+    print(texts[state]["opening"])
+
+
+def query_player(state):
+    print(texts[state]["query"])
+
+
+def potsdam_hbf(player):
+    while player.get_state() is State.POTSDAM_HBF:
+        action = input(">>> ").lower()
+        if action == "buy ticket":
+            print("OK, let's go buy a ticket!")
+            player.state = State.TICKET_AUTOMAT
+        elif action == "get train":
+            print("No ticket! Buy one first!")
+
+        default_interactions(player, action)
+
+
+def first_riddle(player):
+    pass
+
+
+def on_train_1(player):
+    random.seed()
+    # Generate a random number for 60% to get into a ticket control
+    chance = random.randint(1, 100)
+    while player.get_state() is State.TRAIN_1:
+        action = input(">>> ").lower()
+        if action == "get to golm":
+            if chance <= 40:
+                player.state = State.LIBRARY
+            else:
+                player.state = State.TICKET_CONTROL
+
+        default_interactions(player, action)
+
+
+def on_train_2(player):
+    while player.get_state() is State.TRAIN_2:
+        action = input(">>> ").lower()
+        if action == "get to golm":
+            player.set_state(State.COFFEE)
+
+        default_interactions(player, action)
+
+
+def ticket_control(player):
+    # Generate random number for the 50% chance of an invalid ticket
+    chance = random.randint(1, 100)
+    while player.get_state() is State.TICKET_CONTROL:
+        action = input(">>> ").lower()
+        if action == "show ticket":
+            if chance <= 50:
+                player.set_state(State.FEE)
+            else:
+                player.set_state(State.LIBRARY)
+
+        default_interactions(player, action)
+
+
+def fee(player):
+    while player.get_state() is State.FEE:
+        action = input(">>> ").lower()
+        if action == "pay fee":
+            player.set_state(State.LIBRARY)
+            player.set_money(player.get_money() - 15)
+
+        default_interactions(player, action)
+
+
+def library(player):
+    second_riddle(player)
+    while player.get_state() is State.LIBRARY:
+        action = input(">>> ").lower()
+        if action == "read book":
+            player.set_state(State.BOOK)
+        elif action == "get coffee":
+            if player.get_money() > 0:
+                player.set_state(State.COFFEE)
+            else:
+                print("no money left for buying a coffee")
+        default_interactions(player, action)
+
+
+def new_game(player):
+    while player.get_state() is State.NEW_GAME:
+        action = input(">>> ").lower()
+        if action == "yes":
+            player.set_state(State.START)
+        elif action == "no":
+            player.set_state(State.EXIT)
+        else:
+            print("Sorry, I don't understand. Is this a 'yes' or a 'no'?")
+
+
+def second_riddle(player):
+    pass
+
+
+def default_interactions(player, action):
+    if action == "inspect bag":
+        player.inspect_bag()
+    elif action == "exit":
+        player.set_state(State.NEW_GAME)
+    else:
+        print("Sorry, this action is not possible! Try someting else.")
 
 
 def game_loop():
-    # Set the game's state initially to START
-    current_state = State.START
+    # Set game's state initially to START
+    state = State.START
 
     # The main game loop
     while True:
-        if current_state is State.START:
+        if state is State.START:
             player = initialize_player()
-        elif current_state is State.POTSDAM_HBF:
-            pass
-        elif current_state is State.TICKET_AUTOMAT:
-            pass
-        elif current_state is State.TRAIN_1:
-            pass
-        elif current_state is State.TRAIN_2:
-            pass
-        elif current_state is State.TICKET_CONTROL:
-            pass
-        elif current_state is State.LIBRARY:
-            pass
-        elif current_state is State.FEE:
-            pass
-        elif current_state is State.BOOK_READING:
-            pass
-        elif current_state is State.COFFEE_TRINKING:
-            pass
-        elif current_state is State.NEW_GAME:
-            pass
-        elif current_state is State.EXIT:
+            continue
+
+        if state is State.BOOK or State.COFFEE:
+            scene_description(state)
+            state = State.NEW_GAME
+            continue
+
+        if state is State.EXIT:
+            scene_description(state)
             break
 
-        current_state = player.get_state()
+        scene_description(state)
+        query_player(state)
+
+        if state is State.POTSDAM_HBF:
+            potsdam_hbf(player)
+        elif state is State.TICKET_AUTOMAT:
+            first_riddle(player)
+            # TODO: Put payment into first_riddle()
+            player.set_money(player.get_money() - 5)
+        elif state is State.TRAIN_1:
+            on_train_1(player)
+        elif state is State.TRAIN_2:
+            on_train_2(player)
+        elif state is State.TICKET_CONTROL:
+            ticket_control(player)
+        elif state is State.FEE:
+            fee(player)
+        elif state is State.LIBRARY:
+            library(player)
+        elif state is State.NEW_GAME:
+            new_game(player)
+
+        state = player.get_state()
 
 
 def main():
     game_loop()
+    print("The game has ended!")
 
 
 if __name__ == "__main__":
