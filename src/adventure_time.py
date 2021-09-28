@@ -2,6 +2,8 @@
 
 from enum import Enum, auto
 import random
+import nltk
+import time
 
 
 class State(Enum):
@@ -15,13 +17,8 @@ class State(Enum):
     LIBRARY = auto()
     COFFEE = auto()
     BOOK = auto()
-    NEW_GAME = auto()
+    REPLAY = auto()
     EXIT = auto()
-
-#  class Bag(enum):
-    #  MONEY
-    #  TICKET
-    #  BOOK
 
 
 texts = {
@@ -35,37 +32,35 @@ texts = {
     },
     State.TICKET_AUTOMAT: {
         "opening": "Ticket automat opening text",
-        "query": "Do you want to play another round?"
+        "query": "ticket automat query"
     },
     State.TRAIN_1: {
         "opening": "Train 1 opening text",
-        "query": "Do you want to play another round?"
+        "query": "train 1 query"
     },
     State.TRAIN_2: {
         "opening": "Train 1 opening text",
-        "query": "Do you want to play another round?"
+        "query": "train 2 query"
     },
     State.TICKET_CONTROL: {
         "opening": "Ticket control opening",
-        "query": "Do you want to play another round?"
+        "query": "ticket control query"
     },
     State.FEE: {
         "opening": "Fee opening",
-        "query": "Do you want to play another round?"
+        "query": "fee query"
     },
     State.LIBRARY: {
         "opening": "Library opening",
-        "query": "Do you want to play another round?"
+        "query": "library query"
     },
     State.BOOK: {
         "opening": "Book opening",
-        "query": "Do you want to play another round?"
     },
     State.COFFEE: {
         "opening": "Coffee opening",
-        "query": "Do you want to play another round?"
     },
-    State.NEW_GAME: {
+    State.REPLAY: {
         "opening": "You are about to exit the game.",
         "query": "Do you want to play another round?"
     },
@@ -87,7 +82,7 @@ class Player:
     #         self.name = name
 
     def inspect_bag(self):
-        pass
+        print("Your bag contains: Stuff")
 
     def get_state(self):
         return self.state
@@ -123,41 +118,117 @@ def query_player(state):
 def potsdam_hbf(player):
     while player.get_state() is State.POTSDAM_HBF:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "buy ticket":
             print("OK, let's go buy a ticket!")
-            player.state = State.TICKET_AUTOMAT
+            player.set_state(State.TICKET_AUTOMAT)
         elif action == "get train":
             print("No ticket! Buy one first!")
-
-        default_interactions(player, action)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
 def first_riddle(player):
-    pass
+    start_time = time.time()
+    while player.get_state() is State.TICKET_AUTOMAT:
+        present_time = time.time()
+        if present_time - start_time > 120:
+            player.set_state(State.TRAIN_2)
+
+        alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
+        alice = alice \
+            .replace("\n", " ") \
+            .replace("\r", " ")
+            #  .replace("\' ", " ") \
+            #  .replace(" \'", " ")
+
+        tokenized_sentences = nltk.sent_tokenize(alice)
+
+        # get random sentence from alice_tokenized_sentences list
+        random_sentence = random.choice(tokenized_sentences)
+
+        print('this is the random sentence :\n' + random_sentence)
+
+        # tokenize the chosen sentence
+        #  tokenizer = nltk.RegexpTokenizer(r"\w+")
+        #  word_tokens = tokenizer.tokenize(random_sentence.lower())
+        word_tokens = nltk.word_tokenize(random_sentence)
+        print(word_tokens)
+
+        # get random word index
+        # if the word is not a type of punctuation, it is chosen
+        random_word_index = -1  # TODO: if necessary
+        while True:
+            random_word_index = random.randint(0, len(word_tokens) - 1)
+            if not word_tokens[random_word_index] in ".,!?':;":
+                break
+
+        solution = word_tokens[random_word_index]
+
+        # get the pos tag for each word in the sentence
+        pos_tag_list = nltk.pos_tag(word_tokens)
+        pos_tag_of_word = f"{pos_tag_list[random_word_index][1]}"
+
+        word_tokens[random_word_index] = f"<{pos_tag_of_word}>"
+        output_sentence = " ".join(word_tokens) \
+            .replace(" ,", ",") \
+            .replace(" .", ".") \
+            .replace(" :", ":") \
+            .replace(" !", "!") \
+            .replace(" ?", "?") \
+            .replace(" ;", ";") \
+            .replace(" \'", "\'")
+        # print the sentence
+        print(f'The answer is "{solution}"')
+        for i in range(0, 3):
+            if i == 0:
+                print('Can you guess the missing word?')
+            else:
+                print('Have another try.')
+            print(output_sentence)
+            answer = input(">>> ").lower()
+            # put the cheating rule in place
+            if answer == '###':
+                print("Okay, this time I'm gonna turn a blind eye."
+                      f"If you're interested, the solution was '{solution}'.")
+                player.set_state(State.TRAIN_1)
+                break
+            # if the right word was guessed you get won the riddle
+            if answer == solution:
+                print(f"You're right! The word was {solution}, here is your trainticket.")
+                player.set_state(State.TRAIN_1)
+                break
+            else:
+                print("I'm sorry that's not the word. Try again!")
 
 
 def on_train_1(player):
     random.seed()
-    # Generate a random number for 60% to get into a ticket control
+    # Generate a random number for 60% chance to get into a ticket control
     chance = random.randint(1, 100)
     while player.get_state() is State.TRAIN_1:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "get to golm":
             if chance <= 40:
-                player.state = State.LIBRARY
+                player.set_state(State.LIBRARY)
             else:
-                player.state = State.TICKET_CONTROL
-
-        default_interactions(player, action)
+                player.set_state(State.TICKET_CONTROL)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
 def on_train_2(player):
     while player.get_state() is State.TRAIN_2:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "get to golm":
             player.set_state(State.COFFEE)
-
-        default_interactions(player, action)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
 def ticket_control(player):
@@ -165,29 +236,35 @@ def ticket_control(player):
     chance = random.randint(1, 100)
     while player.get_state() is State.TICKET_CONTROL:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "show ticket":
             if chance <= 50:
                 player.set_state(State.FEE)
             else:
                 player.set_state(State.LIBRARY)
-
-        default_interactions(player, action)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
 def fee(player):
     while player.get_state() is State.FEE:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "pay fee":
             player.set_state(State.LIBRARY)
             player.set_money(player.get_money() - 15)
-
-        default_interactions(player, action)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
 def library(player):
     second_riddle(player)
     while player.get_state() is State.LIBRARY:
         action = input(">>> ").lower()
+        standard_interactions(player, action)
+
         if action == "read book":
             player.set_state(State.BOOK)
         elif action == "get coffee":
@@ -195,11 +272,12 @@ def library(player):
                 player.set_state(State.COFFEE)
             else:
                 print("no money left for buying a coffee")
-        default_interactions(player, action)
+        else:
+            print("Sorry, this action is not possible! Try someting else.")
 
 
-def new_game(player):
-    while player.get_state() is State.NEW_GAME:
+def replay(player):
+    while player.get_state() is State.REPLAY:
         action = input(">>> ").lower()
         if action == "yes":
             player.set_state(State.START)
@@ -213,13 +291,11 @@ def second_riddle(player):
     pass
 
 
-def default_interactions(player, action):
+def standard_interactions(player, action):
     if action == "inspect bag":
         player.inspect_bag()
     elif action == "exit":
-        player.set_state(State.NEW_GAME)
-    else:
-        print("Sorry, this action is not possible! Try someting else.")
+        player.set_state(State.REPLAY)
 
 
 def game_loop():
@@ -228,18 +304,18 @@ def game_loop():
 
     # The main game loop
     while True:
-        if state is State.START:
-            player = initialize_player()
-            continue
-
-        if state is State.BOOK or State.COFFEE:
-            scene_description(state)
-            state = State.NEW_GAME
-            continue
-
         if state is State.EXIT:
             scene_description(state)
             break
+
+        if state is State.START:
+            player = initialize_player()
+            state = player.get_state()
+            print(player.get_state())
+
+        if state in [State.BOOK, State.COFFEE]:
+            scene_description(state)
+            state = State.REPLAY
 
         scene_description(state)
         query_player(state)
@@ -260,8 +336,8 @@ def game_loop():
             fee(player)
         elif state is State.LIBRARY:
             library(player)
-        elif state is State.NEW_GAME:
-            new_game(player)
+        elif state is State.REPLAY:
+            replay(player)
 
         state = player.get_state()
 
