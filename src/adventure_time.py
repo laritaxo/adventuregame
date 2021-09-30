@@ -351,6 +351,7 @@ def standard_interactions(player, action):
         matched = True
     return matched
 
+
 def invalid_input_reply():
     random.seed()
     print(random.choice(invalid["invalid"]))
