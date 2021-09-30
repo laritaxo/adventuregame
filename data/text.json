@@ -1,0 +1,51 @@
+{
+  "START": {
+    "opening": "START opening text",
+    "query": "START query text"
+  },
+  "POTSDAM_HBF": {
+    "opening": "You are sitting on a bench at the tram station at Potsdam Central Station.\nYou look at the timetable and see that your tram will arrive in 7 minutes.\nYou close your eyes and feel the sunlight on your face.\nWhen suddenly…\nYou remember that you forgot that you didn't got the book from the library after your course.\nYou need the book to study for next week's exam.\nDo you want to hurry and go get the next train to Golm before the library closes?\n",
+    "query": "Do you want to hurry and go get the next train to Golm before the library closes?",
+    "train": "It seems like you've lost your semester ticket.\nYou need to buy a ticket to get on the train.\nWhat do you wanna do?\n"
+  },
+  "TICKET_AUTOMAT": {
+    "opening": "Welcome to the ticket machine.\nA ticket to Golm and back to the central station costs 5€, but you have to guess the missing word first.",
+    "query": "TICKET_AUTOMAT query text"
+  },
+  "TRAIN_1": {
+    "opening": "Good thing you bought your ticket. Now you can get on the train.",
+    "query": "TRAIN_1 query text"
+  },
+  "TRAIN_2": {
+    "opening": "TRAIN_2 opening text",
+    "query": "TRAIN_2 query text"
+  },
+  "TICKET_CONTROL": {
+    "opening": "TICKET_CONTROL opening text",
+    "query": "TICKET_CONTROL query text"
+  },
+  "FEE": {
+    "opening": "FEE opening text",
+    "query": "FEE query text"
+  },
+  "LIBRARY": {
+    "opening": "LIBRARY opening text",
+    "query": "LIBRARY query text"
+  },
+  "COFFEE": {
+    "opening": "COFFEE opening text",
+    "query": "COFFEE query text"
+  },
+  "BOOK": {
+    "opening": "BOOK opening text",
+    "query": "BOOK query text"
+  },
+  "REPLAY": {
+    "opening": "REPLAY opening text",
+    "query": "REPLAY query text"
+  },
+  "EXIT": {
+    "opening": "EXIT opening text",
+    "query": "EXIT query text"
+  }
+}
