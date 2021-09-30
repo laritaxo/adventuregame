@@ -12,6 +12,8 @@
   "TICKET_AUTOMAT": {
     "scene_description": "Welcome to the ticket machine.",
     "query": "A ticket to Golm and back costs 5€, but to get one you first have guess the missing word in the following sentence:",
+    "wrong": "I'm sorry, that's not the searched word. Try again!",
+    "wrong3x": "I'm sorry, that's still not the searched word. Here another sentence for you:",
     "###": "Okay, this time I'm gonna turn a blind eye.\nIf you're interested, the solution was:",
     "win": "That's correct! Here is your train ticket."
   },
@@ -34,6 +36,8 @@
   "LIBRARY": {
     "scene_description": "Finally you arrived at the library and that just on time. Now you need to hurry, because the library is about to close soon.",
     "query": "Guess the animal by its definition and you will get your book.",
+    "wrong": "Unfortunately that's not the searched animal. Have another guess!",
+    "wrong3x": "The animal was {animal}. Here a new animal to guess. Good Luck!",
     "###": "Congratulations! You cheated your way through this game! Your parents must be pretty proud.\nGo take your book!",
     "win": "Congratulations! You guessed the animal! Now you can finally take the book home with you."
   },
@@ -49,11 +53,11 @@
     "scene_description": "You sit down to read your book."
   },
   "REPLAY": {
-    "scene_description": "Congratulations: You finished the game!",
+    "scene_description": "You've finished the game!",
     "query": "Do you wanna play another round?",
     "no_option": "Sorry, I don't understand. Is this a 'yes' or a 'no'?"
   },
   "EXIT": {
-    "scene_description": "Good Bye! It was nice playing with you"
+    "scene_description": "Good Bye! It was nice playing with you!"
   }
 }

@@ -29,15 +29,15 @@ texts = {}
 
 
 class Player:
-    bag = {'money': 20, 'ticket': None, 'book': None}
+    bag = {'money': 20, 'ticket': False, 'book': False}
     state = State.POTSDAM_HBF
 
     def inspect_bag(self):
         print("Your bag contains:")
         print(f"➜ {self.bag['money']} euros")
-        if self.bag['ticket'] is not None:
+        if self.bag['ticket'] is True:
             print("➜ a train ticket")
-        if self.bag['book'] is not None:
+        if self.bag['book'] is True:
             print("➜ the book 'Analysis I for Computer Scientists'")
 
     def get_state(self):
@@ -65,13 +65,13 @@ class Player:
         self.bag['money'] -= 15
 
     def has_ticket(self):
-        return self.bag['ticket'] is not None
+        return self.bag['ticket'] is True
 
     def put_book_into_bag(self):
         self.bag['book'] = True
 
     def has_book(self):
-        return self.bag['book'] is not None
+        return self.bag['book'] is True
 
 
 def initialize_player():
@@ -98,7 +98,7 @@ def potsdam_hbf(player):
         elif action == "get train":
             print(texts[player.get_state_str()][action])
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def first_riddle(player):
@@ -108,8 +108,6 @@ def first_riddle(player):
         alice = alice \
             .replace("\n", " ") \
             .replace("\r", " ") \
-            .replace("\' ", " ") \
-            .replace(" \'", " ") \
 
         sentence_tokens = nltk.sent_tokenize(alice)
 
@@ -186,10 +184,10 @@ def first_riddle(player):
                 player.set_state(State.TRAIN_1)
                 return
             elif i < 2:
-                print("I'm sorry, that's not the searched word. Try again!")
+                print(texts[player.get_state_str()]["wrong"])
                 print(f"\t»{output_sentence}«")
             else:
-                print("I'm sorry, that's still not the searched word. Here another sentence for you:")
+                print(texts[player.get_state_str()]["wrong3x"])
 
 
 def on_train_1(player):
@@ -208,7 +206,7 @@ def on_train_1(player):
             else:
                 player.set_state(State.TICKET_CONTROL)
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def on_train_2(player):
@@ -220,7 +218,7 @@ def on_train_2(player):
         if action == "get to golm":
             player.set_state(State.COFFEE)
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def ticket_control(player):
@@ -239,7 +237,7 @@ def ticket_control(player):
             else:
                 player.set_state(State.LIBRARY)
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def fee(player):
@@ -252,7 +250,7 @@ def fee(player):
             player.pay_fee()
             player.set_state(State.LIBRARY)
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def second_riddle(player):
@@ -271,44 +269,46 @@ def second_riddle(player):
     with open('../data/animals.csv', 'r') as file:
         # read animals.csv
         reader = csv.reader(file)
-        while player.get_state() is State.LIBRARY:
-            # get random animal
-            animal_name = random.choice(list(reader))[0]
-            # get definition of the random animal
-            definition = wn.synset(animal_name + '.n.01').definition()
+        animal_list = list(reader)
+    while player.get_state() is State.LIBRARY:
+        # get random animal
+        animal_name = random.choice(animal_list)[0]
+        # get definition of the random animal
+        definition = wn.synset(animal_name + '.n.01').definition()
 
-            # allow player to guess 3 times per animal
-            for i in range(0, 3):
-                if player.get_state() is not State.LIBRARY:
-                    break
-                print(f"Definition: {definition}")
-                action = input(">>> ").lower()
+        # allow player to guess 3 times per animal
+        for i in range(0, 3):
+            if player.get_state() is not State.LIBRARY:
+                break
+            print(f"Definition: {definition}")
+            action = input(">>> ").lower()
 
-                # the standard interaction 'check bag' is not counted as a guess
-                # so the loop counter 'i' is lowered by 1 and the remaining code is
-                # skipped
-                if standard_interactions(player, action):
-                    i -= 1
-                    continue
+            # the standard interaction 'check bag' is not counted as a guess
+            # so the loop counter 'i' is lowered by 1 and the remaining code is
+            # skipped
+            if standard_interactions(player, action):
+                i -= 1
+                continue
 
-                # if player's guess is the cheat
-                elif action == "###":
-                    # animal gets revealed
-                    print(f"The animal was: {animal_name}")
-                    print(texts[player.get_state_str()][action])
-                # if player's guess is the random animal
-                elif action == animal_name:
-                    # they won the game and get the book
-                    print(texts[player.get_state_str()]["win"])
+            # if player's guess is the cheat
+            elif action == "###":
+                # animal gets revealed
+                print(f"The animal was: {animal_name}")
+                print(texts[player.get_state_str()][action])
+            # if player's guess is the random animal
+            elif action == animal_name:
+                # they won the game and get the book
+                print(texts[player.get_state_str()]["win"])
 
-                if action in [animal_name, "###"]:
-                    player.put_book_into_bag()
-                    player.set_state(State.GOT_BOOK)
-                    return
-                else:
-                    print("Unfortunately that's not the searched animal. Have another guess!")
+            if action in [animal_name, "###"]:
+                player.put_book_into_bag()
+                player.set_state(State.GOT_BOOK)
+                return
+            else:
+                print(texts[player.get_state_str()]["wrong"])
 
-            print(f"The animal was {animal_name}. Here a new animal to guess. Good Luck!")
+        if player.get_state() is State.LIBRARY:
+            print(texts[player.get_state_str()]["wrong3x"].format(animal=animal_name))
 
 
 def got_book(player):
@@ -327,7 +327,7 @@ def got_book(player):
             else:
                 print(texts[player.get_state_str()]["no_money"])
         else:
-            print("Sorry, this action is not possible! Try something else.")
+            invalid_input_reply()
 
 
 def replay(player):
@@ -351,13 +351,17 @@ def standard_interactions(player, action):
         matched = True
     return matched
 
+def invalid_input_reply():
+    random.seed()
+    print(random.choice(invalid["invalid"]))
+
 
 def game_loop():
-    # Set game's state initially to START
+    # set game's state initially to START
     state = State.START
     player = None
 
-    # The main game loop
+    # the main game loop
     while True:
         if state is State.START:
             player = initialize_player()
@@ -397,14 +401,14 @@ def game_loop():
 
 
 def main():
+    global texts
+    with open("../data/texts.json", "r") as texts_json:
+        texts = json.load(texts_json)
+    global invalid
+    with open("../data/invalid.json", "r") as invalid_json:
+        invalid = json.load(invalid_json)
     game_loop()
-    print("The game has ended!")
 
 
 if __name__ == "__main__":
-    # player = Player()
-    # player.set_state(State.LIBRARY)
-    # second_riddle(player)
-    with open("../data/text.json", "r") as texts_json:
-        texts = json.load(texts_json)
     main()

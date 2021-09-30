@@ -1,0 +1,8 @@
+{
+  "invalid": [
+    "Sorry, that doesn't work here. Try again.",
+    "That is not possible right now. Try again.",
+    "You can't do that here.",
+    "Sorry, that is now allowed. Try something else."
+  ]
+}
