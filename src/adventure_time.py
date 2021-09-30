@@ -71,7 +71,7 @@ texts = {
 
 
 class Player:
-    # TODO: 'name' is an optinal feature yet to implement
+    # TODO: 'name' is an optional feature yet to implement
     # name = random.choice(["John", "Jane"])
     bag = {'money': 20, 'ticket': None, 'book': None}
     state = State.POTSDAM_HBF
@@ -124,7 +124,8 @@ def query_player(state):
 def potsdam_hbf(player):
     while player.get_state() is State.POTSDAM_HBF:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "buy ticket":
             print("OK, let's go buy a ticket!")
@@ -132,14 +133,14 @@ def potsdam_hbf(player):
         elif action == "get train":
             print("No ticket! Buy one first!")
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def first_riddle(player):
     start_time = time.time()
     while player.get_state() is State.TICKET_AUTOMAT:
-        present_time = time.time()
-        if present_time - start_time > 120:
+        current_time = time.time()
+        if current_time - start_time > 120:
             player.set_state(State.TRAIN_2)
 
         alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
@@ -149,34 +150,36 @@ def first_riddle(player):
             #  .replace("\' ", " ") \
             #  .replace(" \'", " ")
 
-        tokenized_sentences = nltk.sent_tokenize(alice)
+        sentence_tokens = nltk.sent_tokenize(alice)
 
         # get random sentence from alice_tokenized_sentences list
-        random_sentence = random.choice(tokenized_sentences)
-
-        print('this is the random sentence :\n' + random_sentence)
+        random_sentence = random.choice(sentence_tokens)
+        # print(f"This is the random sentence:\n\n{random_sentence}")
 
         # tokenize the chosen sentence
-        #  tokenizer = nltk.RegexpTokenizer(r"\w+")
-        #  word_tokens = tokenizer.tokenize(random_sentence.lower())
         word_tokens = nltk.word_tokenize(random_sentence)
-        print(word_tokens)
+        # print(f"These are the word tokens:\n\n{word_tokens})
 
         # get random word index
         # if the word is not a type of punctuation, it is chosen
-        random_word_index = -1  # TODO: if necessary
         while True:
             random_word_index = random.randint(0, len(word_tokens) - 1)
             if not word_tokens[random_word_index] in ".,!?':;":
                 break
 
+        # store the searched word
         solution = word_tokens[random_word_index]
 
-        # get the pos tag for each word in the sentence
+        # generate pos tags for all words in the sentence
         pos_tag_list = nltk.pos_tag(word_tokens)
+
+        # get the pos for searched word
         pos_tag_of_word = f"{pos_tag_list[random_word_index][1]}"
 
+        # replace the searched word with its pos tag
         word_tokens[random_word_index] = f"<{pos_tag_of_word}>"
+
+        # rejoin the sentence and correct for unwanted spaces
         output_sentence = " ".join(word_tokens) \
             .replace(" ,", ",") \
             .replace(" .", ".") \
@@ -185,38 +188,44 @@ def first_riddle(player):
             .replace(" ?", "?") \
             .replace(" ;", ";") \
             .replace(" \'", "\'")
-        # print the sentence
-        print(f'The answer is "{solution}"')
+
+        # start the 3 tries loop
         for i in range(0, 3):
             if player.get_state() is not State.TICKET_AUTOMAT:
                 break
             if i == 0:
+                print(output_sentence)
                 print('Can you guess the missing word?')
-            else:
-                print('Have another try.')
-            print(output_sentence)
+
             answer = input(">>> ").lower()
-            standard_interactions(player, answer)
+            if standard_interactions(player, answer):
+                continue
+
             # put the cheating rule in place
             if answer == '###':
-                print("Okay, this time I'm gonna turn a blind eye."
-                      f"If you're interested, the solution was '{solution}'.")
+                print("Okay, this time I'm gonna turn a blind eye.")
+                print(f"If you're interested, the solution was '{solution}'.")
                 player.set_state(State.TRAIN_1)
-            # if the right word was guessed, you win the riddle
+            # if the right word was guessed, the player wins the riddle
             if answer == solution:
-                print(f"That's correct! It's '{solution}'. Here is your trainticket.")
+                print(f"That's correct! It's '{solution}'. Here is your train ticket.")
                 player.set_state(State.TRAIN_1)
+
+                # the 5€ for the ticket are taken from the players bag
+                player.set_money(player.get_money() - 5)
             else:
-                print("I'm sorry that's not the word. Try again!")
+                print("I'm sorry, that's not the searched word. Try again!")
 
 
 def on_train_1(player):
+    # Generate a random number for a 60% chance to get into a ticket control
     random.seed()
-    # Generate a random number for 60% chance to get into a ticket control
     chance = random.randint(1, 100)
+
     while player.get_state() is State.TRAIN_1:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "get to golm":
             if chance <= 40:
@@ -224,26 +233,30 @@ def on_train_1(player):
             else:
                 player.set_state(State.TICKET_CONTROL)
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def on_train_2(player):
     while player.get_state() is State.TRAIN_2:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "get to golm":
             player.set_state(State.COFFEE)
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def ticket_control(player):
     # Generate random number for the 50% chance of an invalid ticket
+    random.seed()
     chance = random.randint(1, 100)
+
     while player.get_state() is State.TICKET_CONTROL:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "show ticket":
             if chance <= 50:
@@ -251,26 +264,28 @@ def ticket_control(player):
             else:
                 player.set_state(State.LIBRARY)
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def fee(player):
     while player.get_state() is State.FEE:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "pay fee":
             player.set_state(State.LIBRARY)
             player.set_money(player.get_money() - 15)
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def library(player):
     second_riddle(player)
     while player.get_state() is State.LIBRARY:
         action = input(">>> ").lower()
-        standard_interactions(player, action)
+        if standard_interactions(player, action):
+            continue
 
         if action == "read book":
             player.set_state(State.BOOK)
@@ -280,7 +295,7 @@ def library(player):
             else:
                 print("no money left for buying a coffee")
         else:
-            print("Sorry, this action is not possible! Try someting else.")
+            print("Sorry, this action is not possible! Try something else.")
 
 
 def replay(player):
@@ -299,10 +314,14 @@ def second_riddle(player):
 
 
 def standard_interactions(player, action):
+    matched = False
     if action == "inspect bag":
         player.inspect_bag()
+        matched = True
     elif action == "exit":
         player.set_state(State.REPLAY)
+        matched = True
+    return matched
 
 
 def game_loop():
@@ -322,7 +341,9 @@ def game_loop():
 
         if state in [State.BOOK, State.COFFEE]:
             scene_description(state)
-            state = State.REPLAY
+            player.set_state(State.REPLAY)
+            state = player.get_state()
+            continue
 
         scene_description(state)
         query_player(state)
@@ -331,8 +352,6 @@ def game_loop():
             potsdam_hbf(player)
         elif state is State.TICKET_AUTOMAT:
             first_riddle(player)
-            # TODO: Put payment into first_riddle()
-            player.set_money(player.get_money() - 5)
         elif state is State.TRAIN_1:
             on_train_1(player)
         elif state is State.TRAIN_2:
@@ -343,6 +362,8 @@ def game_loop():
             fee(player)
         elif state is State.LIBRARY:
             library(player)
+        elif state is State.REPLAY:
+            replay(player)
 
         state = player.get_state()
 
