@@ -82,7 +82,12 @@ class Player:
     #         self.name = name
 
     def inspect_bag(self):
-        print("Your bag contains: Stuff")
+        print("Your bag contains:")
+        print(f"➜ {self.bag['money']} euros")
+        if self.bag['ticket'] is not None:
+            print(f"➜ a train ticket")
+        if self.bag['book'] is not None:
+            print(f"➜ the book 'Analysis I for Computer Scientists'")
 
     def get_state(self):
         return self.state
@@ -142,6 +147,9 @@ def first_riddle(player):
         current_time = time.time()
         if current_time - start_time > 120:
             player.set_state(State.TRAIN_2)
+            player.set_money(player.get_money() - 5)
+            player.put_ticket_into_bag()
+            continue
 
         alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
         alice = alice \
@@ -193,6 +201,7 @@ def first_riddle(player):
         for i in range(0, 3):
             if player.get_state() is not State.TICKET_AUTOMAT:
                 break
+
             if i == 0:
                 print(output_sentence)
                 print('Can you guess the missing word?')
@@ -205,16 +214,19 @@ def first_riddle(player):
             if answer == '###':
                 print("Okay, this time I'm gonna turn a blind eye.")
                 print(f"If you're interested, the solution was '{solution}'.")
-                player.set_state(State.TRAIN_1)
+
             # if the right word was guessed, the player wins the riddle
             if answer == solution:
                 print(f"That's correct! It's '{solution}'. Here is your train ticket.")
-                player.set_state(State.TRAIN_1)
-
-                # the 5€ for the ticket are taken from the players bag
-                player.set_money(player.get_money() - 5)
             else:
                 print("I'm sorry, that's not the searched word. Try again!")
+                print(output_sentence)
+
+            # if solved, change state, add ticket to bag, and take money from player
+            if answer in ['###', solution]:
+                player.set_state(State.TRAIN_1)
+                player.put_ticket_into_bag()
+                player.set_money(player.get_money() - 5)
 
 
 def on_train_1(player):
