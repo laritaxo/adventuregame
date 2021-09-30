@@ -6,6 +6,7 @@ import nltk
 from nltk.corpus import wordnet as wn
 import time
 import csv
+import json
 
 
 class State(Enum):
@@ -24,57 +25,58 @@ class State(Enum):
     EXIT = auto()
 
 
-texts = {
-    State.START: {
-        "opening": "This is the game opening text",
-        "query": ""
-    },
-    State.POTSDAM_HBF: {
-        "opening": "This is the Potsdam Hbf opening text",
-        "query": "What do you want to do?",
-    },
-    State.TICKET_AUTOMAT: {
-        "opening": "Ticket automat opening text",
-        "query": "ticket automat query"
-    },
-    State.TRAIN_1: {
-        "opening": "Train 1 opening text",
-        "query": "train 1 query"
-    },
-    State.TRAIN_2: {
-        "opening": "Train 1 opening text",
-        "query": "train 2 query"
-    },
-    State.TICKET_CONTROL: {
-        "opening": "Ticket control opening",
-        "query": "ticket control query"
-    },
-    State.FEE: {
-        "opening": "Fee opening",
-        "query": "fee query"
-    },
-    State.LIBRARY: {
-        "opening": "Library opening",
-        "query": "library query"
-    },
-    State.GOT_BOOK: {
-        "opening": "Got book opening",
-        "query": "got book query"
-    },
-    State.BOOK: {
-        "opening": "Book opening",
-    },
-    State.COFFEE: {
-        "opening": "Coffee opening",
-    },
-    State.REPLAY: {
-        "opening": "You are about to exit the game.",
-        "query": "Do you want to play another round?"
-    },
-    State.EXIT: {
-        "opening": "Bye! Until next time.",
-    }
-}
+# texts = {
+#     State.START: {
+#         "opening": "This is the game opening text",
+#         "query": ""
+#     },
+#     State.POTSDAM_HBF: {
+#         "opening": "This is the Potsdam Hbf opening text",
+#         "query": "What do you want to do?",
+#     },
+#     State.TICKET_AUTOMAT: {
+#         "opening": "Ticket automat opening text",
+#         "query": "ticket automat query"
+#     },
+#     State.TRAIN_1: {
+#         "opening": "Train 1 opening text",
+#         "query": "train 1 query"
+#     },
+#     State.TRAIN_2: {
+#         "opening": "Train 1 opening text",
+#         "query": "train 2 query"
+#     },
+#     State.TICKET_CONTROL: {
+#         "opening": "Ticket control opening",
+#         "query": "ticket control query"
+#     },
+#     State.FEE: {
+#         "opening": "Fee opening",
+#         "query": "fee query"
+#     },
+#     State.LIBRARY: {
+#         "opening": "Library opening",
+#         "query": "library query"
+#     },
+#     State.GOT_BOOK: {
+#         "opening": "Got book opening",
+#         "query": "got book query"
+#     },
+#     State.BOOK: {
+#         "opening": "Book opening",
+#     },
+#     State.COFFEE: {
+#         "opening": "Coffee opening",
+#     },
+#     State.REPLAY: {
+#         "opening": "You are about to exit the game.",
+#         "query": "Do you want to play another round?"
+#     },
+#     State.EXIT: {
+#         "opening": "Bye! Until next time.",
+#     }
+# }
+texts = {}
 
 
 class Player:
@@ -126,11 +128,11 @@ def initialize_player():
 
 
 def scene_description(state):
-    print(texts[state]["opening"])
+    print(texts[state.name]["opening"])
 
 
 def query_player(state):
-    print(texts[state]["query"])
+    print(texts[state.name]["query"])
 
 
 def potsdam_hbf(player):
@@ -455,4 +457,6 @@ if __name__ == "__main__":
     # player = Player()
     # player.set_state(State.LIBRARY)
     # second_riddle(player)
+    with open("../data/text.json", "r") as texts_json:
+        texts = json.load(texts_json)
     main()

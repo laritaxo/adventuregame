@@ -4,7 +4,7 @@
     "query": "START query text"
   },
   "POTSDAM_HBF": {
-    "opening": "You are sitting on a bench at the tram station at Potsdam Central Station.\nYou look at the timetable and see that your tram will arrive in 7 minutes.\nYou close your eyes and feel the sunlight on your face.\nWhen suddenly…\nYou remember that you forgot that you didn't got the book from the library after your course.\nYou need the book to study for next week's exam.\nDo you want to hurry and go get the next train to Golm before the library closes?\n",
+    "opening": "You are sitting on a bench at the tram station at Potsdam Central Station.\nYou look at the timetable and see that your tram will arrive in 7 minutes.\nYou close your eyes and feel the sunlight on your face.\nWhen suddenly…\nYou remember that you forgot that you didn't got the book from the library after your course.\nYou need the book to study for next week's exam.\n",
     "query": "Do you want to hurry and go get the next train to Golm before the library closes?",
     "train": "It seems like you've lost your semester ticket.\nYou need to buy a ticket to get on the train.\nWhat do you wanna do?\n"
   },
@@ -17,35 +17,35 @@
     "query": "TRAIN_1 query text"
   },
   "TRAIN_2": {
-    "opening": "TRAIN_2 opening text",
-    "query": "TRAIN_2 query text"
+    "opening": "Good job on finding the word!\nSadly you missed the first train, but the second one is here so get on.",
+    "query": "Where do you wanna get to?"
   },
   "TICKET_CONTROL": {
-    "opening": "TICKET_CONTROL opening text",
-    "query": "TICKET_CONTROL query text"
+    "opening": "SURPRISE! You got into a ticket control.",
+    "query": "Do you wanna show your ticket?"
   },
   "FEE": {
-    "opening": "FEE opening text",
-    "query": "FEE query text"
+    "opening": "It seems that you didn't validate your ticket before getting on the train.\nYou need to pay a 15€ fee.\n",
+    "query": "What do you wanna do?"
   },
   "LIBRARY": {
-    "opening": "LIBRARY opening text",
-    "query": "LIBRARY query text"
+    "opening": "You need to hurry! The library will close soon.",
+    "query": "Guess the animal and you will get your book."
   },
   "COFFEE": {
-    "opening": "COFFEE opening text",
+    "opening": "Here is your coffee, I hope it tastes good.",
     "query": "COFFEE query text"
   },
   "BOOK": {
-    "opening": "BOOK opening text",
+    "opening": "You sit down to read your book.",
     "query": "BOOK query text"
   },
   "REPLAY": {
-    "opening": "REPLAY opening text",
-    "query": "REPLAY query text"
+    "opening": "Congratulations: You finished the game!",
+    "query": "Do you wanna play another round?"
   },
   "EXIT": {
-    "opening": "EXIT opening text",
+    "opening": "Good Bye! It was nice playing with you",
     "query": "EXIT query text"
   }
 }
