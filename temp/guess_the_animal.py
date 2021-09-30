@@ -83,17 +83,17 @@ def guess_loop(player, animal_name):
 
 
 def guess_animal_name():
-    '''
+    """
     This function starts the second game in which the player has to guess the animal
     just by reading the definition of it. The player gets 3 guesses for each randomly
     chosen animal. If the player guesses the animal correct or puts in the cheat "###"
     they win the game and get the book from the library. Else the game goes on til the
     player gets it right. The player can always exit the game with "exit()" or inspect
     their bag with "inspect_bag()".
-    '''
+    """
 
     # open animal.csv file
-    with open('/temp/animals.csv', 'r') as file:
+    with open('../data/animals.csv', 'r') as file:
         string1 = " "
         reader = csv.reader(file)
         # get random animal

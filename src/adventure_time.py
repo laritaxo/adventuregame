@@ -3,7 +3,9 @@
 from enum import Enum, auto
 import random
 import nltk
+from nltk.corpus import wordnet as wn
 import time
+import csv
 
 
 class State(Enum):
@@ -15,6 +17,7 @@ class State(Enum):
     TICKET_CONTROL = auto()
     FEE = auto()
     LIBRARY = auto()
+    GOT_BOOK = auto()
     COFFEE = auto()
     BOOK = auto()
     REPLAY = auto()
@@ -53,6 +56,10 @@ texts = {
     State.LIBRARY: {
         "opening": "Library opening",
         "query": "library query"
+    },
+    State.GOT_BOOK: {
+        "opening": "Got book opening",
+        "query": "got book query"
     },
     State.BOOK: {
         "opening": "Book opening",
@@ -154,9 +161,9 @@ def first_riddle(player):
         alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
         alice = alice \
             .replace("\n", " ") \
-            .replace("\r", " ")
-            #  .replace("\' ", " ") \
-            #  .replace(" \'", " ")
+            .replace("\r", " ") \
+            .replace("\' ", " ") \
+            .replace(" \'", " ") \
 
         sentence_tokens = nltk.sent_tokenize(alice)
 
@@ -172,7 +179,7 @@ def first_riddle(player):
         # if the word is not a type of punctuation, it is chosen
         while True:
             random_word_index = random.randint(0, len(word_tokens) - 1)
-            if not word_tokens[random_word_index] in ".,!?':;":
+            if word_tokens[random_word_index].isalpha():
                 break
 
         # store the searched word
@@ -195,38 +202,41 @@ def first_riddle(player):
             .replace(" !", "!") \
             .replace(" ?", "?") \
             .replace(" ;", ";") \
-            .replace(" \'", "\'")
+            .replace("( ", "(") \
+            .replace(" )", ")") \
+            .replace(" '", "'") \
+            .replace("`` ", "``") \
+            .replace(" n't", "n't")
 
         # start the 3 tries loop
+        print(f"»{output_sentence}«")
+        print("Can you guess the missing word?")
         for i in range(0, 3):
             if player.get_state() is not State.TICKET_AUTOMAT:
                 break
 
-            if i == 0:
-                print(output_sentence)
-                print('Can you guess the missing word?')
-
             answer = input(">>> ").lower()
             if standard_interactions(player, answer):
+                i -= 1
                 continue
 
             # put the cheating rule in place
-            if answer == '###':
+            if answer == "###":
                 print("Okay, this time I'm gonna turn a blind eye.")
                 print(f"If you're interested, the solution was '{solution}'.")
 
             # if the right word was guessed, the player wins the riddle
             if answer == solution:
-                print(f"That's correct! It's '{solution}'. Here is your train ticket.")
-            else:
-                print("I'm sorry, that's not the searched word. Try again!")
-                print(output_sentence)
+                print(f"That's correct! It's »{solution}«. Here is your train ticket.")
 
             # if solved, change state, add ticket to bag, and take money from player
-            if answer in ['###', solution]:
+            if answer in ["###", solution]:
                 player.set_state(State.TRAIN_1)
                 player.put_ticket_into_bag()
                 player.set_money(player.get_money() - 5)
+            else:
+                print("I'm sorry, that's not the searched word. Try again!")
+                print(f"»{output_sentence}«")
 
 
 def on_train_1(player):
@@ -292,9 +302,8 @@ def fee(player):
             print("Sorry, this action is not possible! Try something else.")
 
 
-def library(player):
-    second_riddle(player)
-    while player.get_state() is State.LIBRARY:
+def got_book(player):
+    while player.get_state() is State.GOT_BOOK:
         action = input(">>> ").lower()
         if standard_interactions(player, action):
             continue
@@ -322,7 +331,62 @@ def replay(player):
 
 
 def second_riddle(player):
-    pass
+    """
+    This function starts the second game in which the player has to guess the animal
+    just by reading the definition of it. The player gets 3 guesses for each randomly
+    chosen animal. If the player guesses the animal correct or puts in the cheat "###"
+    they win the game and get the book from the library. Else the game goes on til the
+    player gets it right. The player can always exit the game with "exit()" or inspect
+    their bag with "inspect_bag()".
+
+    :player: instance of Player
+    """
+
+    # open animal.csv file
+    with open('../data/animals.csv', 'r') as file:
+        # read animals.csv
+        reader = csv.reader(file)
+        while player.get_state() is State.LIBRARY:
+            # get random animal
+            animal_name = random.choice(list(reader))[0]
+            # get definition of the random animal
+            definition = wn.synset(animal_name + '.n.01').definition()
+
+            # allow player to guess 3 times per animal
+            for i in range(0, 3):
+                if player.get_state() is not State.LIBRARY:
+                    break
+                print(f"Definition: {definition}")
+                action = input(">>> ").lower()
+
+                # the standard interaction 'check bag' is not counted as a guess
+                # so the loop counter 'i' is lowered by 1 and the remaining code is
+                # skipped
+                if standard_interactions(player, action):
+                    i -= 1
+                    continue
+
+                # if player's guess is the cheat
+                elif action == "###":
+                    # animal gets revealed
+                    print(f"The animal was {animal_name}.")
+                    print("Congratulations! You cheated your way through this game, "
+                          "your parents must be proud. Go take your book")
+                # if player's guess is the random animal
+                elif action == animal_name:
+                    # they won the game and get the book
+                    print("Congratulations! You guessed the animal! Now you can finally "
+                          "take the book home with you ")
+
+                if action in [animal_name, "###"]:
+                    player.put_book_into_bag()
+                    player.set_state(State.GOT_BOOK)
+                    continue
+                else:
+                    print("Unfortunately that's not the searched animal. Have another guess!")
+
+            if player.get_state() is State.LIBRARY:
+                print(f"The animal was {animal_name}. Here is a new animal to guess. Good Luck.")
 
 
 def standard_interactions(player, action):
@@ -373,7 +437,9 @@ def game_loop():
         elif state is State.FEE:
             fee(player)
         elif state is State.LIBRARY:
-            library(player)
+            second_riddle(player)
+        elif state is State.GOT_BOOK:
+            got_book(player)
         elif state is State.REPLAY:
             replay(player)
 
@@ -386,4 +452,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # player = Player()
+    # player.set_state(State.LIBRARY)
+    # second_riddle(player)
     main()
