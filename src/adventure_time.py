@@ -9,10 +9,14 @@ import csv
 import json
 
 
+texts = {}
+invalid = {}
+
+
 class State(Enum):
     START = auto()
     POTSDAM_HBF = auto()
-    TICKET_AUTOMAT = auto()
+    TICKET_MACHINE = auto()
     TRAIN_1 = auto()
     TRAIN_2 = auto()
     TICKET_CONTROL = auto()
@@ -23,9 +27,6 @@ class State(Enum):
     BOOK = auto()
     REPLAY = auto()
     EXIT = auto()
-
-
-texts = {}
 
 
 class Player:
@@ -94,7 +95,7 @@ def potsdam_hbf(player):
 
         if action == "buy ticket":
             print(texts[player.get_state_str()][action])
-            player.set_state(State.TICKET_AUTOMAT)
+            player.set_state(State.TICKET_MACHINE)
         elif action == "get train":
             print(texts[player.get_state_str()][action])
         else:
@@ -103,7 +104,7 @@ def potsdam_hbf(player):
 
 def first_riddle(player):
     start_time = time.time()
-    while player.get_state() is State.TICKET_AUTOMAT:
+    while player.get_state() is State.TICKET_MACHINE:
         alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
         alice = alice \
             .replace("\n", " ") \
@@ -155,7 +156,7 @@ def first_riddle(player):
         # start the 3 tries loop
         print(f"\t»{output_sentence}«")
         for i in range(0, 3):
-            if player.get_state() is not State.TICKET_AUTOMAT:
+            if player.get_state() is not State.TICKET_MACHINE:
                 break
 
             answer = input(">>> ").lower()
@@ -381,7 +382,7 @@ def game_loop():
 
         if state is State.POTSDAM_HBF:
             potsdam_hbf(player)
-        elif state is State.TICKET_AUTOMAT:
+        elif state is State.TICKET_MACHINE:
             first_riddle(player)
         elif state is State.TRAIN_1:
             on_train_1(player)

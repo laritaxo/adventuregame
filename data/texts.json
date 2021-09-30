@@ -9,7 +9,7 @@
     "buy ticket": "Okay, let's do that!\n",
     "get train": "It seems like you've lost your semester ticket.\nYou need to buy a ticket to get on the train.\nWhat do you wanna do?"
   },
-  "TICKET_AUTOMAT": {
+  "TICKET_MACHINE": {
     "scene_description": "Welcome to the ticket machine.",
     "query": "A ticket to Golm and back costs 5€, but to get one you first have guess the missing word in the following sentence:",
     "wrong": "I'm sorry, that's not the searched word. Try again!",
