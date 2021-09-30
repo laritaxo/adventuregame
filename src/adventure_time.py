@@ -25,57 +25,6 @@ class State(Enum):
     EXIT = auto()
 
 
-# texts = {
-#     State.START: {
-#         "opening": "This is the game opening text",
-#         "query": ""
-#     },
-#     State.POTSDAM_HBF: {
-#         "opening": "This is the Potsdam Hbf opening text",
-#         "query": "What do you want to do?",
-#     },
-#     State.TICKET_AUTOMAT: {
-#         "opening": "Ticket automat opening text",
-#         "query": "ticket automat query"
-#     },
-#     State.TRAIN_1: {
-#         "opening": "Train 1 opening text",
-#         "query": "train 1 query"
-#     },
-#     State.TRAIN_2: {
-#         "opening": "Train 1 opening text",
-#         "query": "train 2 query"
-#     },
-#     State.TICKET_CONTROL: {
-#         "opening": "Ticket control opening",
-#         "query": "ticket control query"
-#     },
-#     State.FEE: {
-#         "opening": "Fee opening",
-#         "query": "fee query"
-#     },
-#     State.LIBRARY: {
-#         "opening": "Library opening",
-#         "query": "library query"
-#     },
-#     State.GOT_BOOK: {
-#         "opening": "Got book opening",
-#         "query": "got book query"
-#     },
-#     State.BOOK: {
-#         "opening": "Book opening",
-#     },
-#     State.COFFEE: {
-#         "opening": "Coffee opening",
-#     },
-#     State.REPLAY: {
-#         "opening": "You are about to exit the game.",
-#         "query": "Do you want to play another round?"
-#     },
-#     State.EXIT: {
-#         "opening": "Bye! Until next time.",
-#     }
-# }
 texts = {}
 
 
