@@ -46,6 +46,10 @@
     "query": "What are you up for?",
     "no_money": "Unfortunately you already spent all your money, so you haven't any left for a coffee.\nWhat else can you think of to do?"
   },
+  "NO_BOOK": {
+    "scene_description": "You are too late! :( The library is already closed. Go get a coffee, maybe it will cheer you up.",
+    "query": "What's it gonna be?"
+  },
   "COFFEE": {
     "scene_description": "Here is your coffee, I hope it tastes good."
   },

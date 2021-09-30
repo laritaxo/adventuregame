@@ -23,6 +23,7 @@ class State(Enum):
     FEE = auto()
     LIBRARY = auto()
     GOT_BOOK = auto()
+    NO_BOOK = auto()
     COFFEE = auto()
     BOOK = auto()
     REPLAY = auto()
@@ -217,7 +218,7 @@ def on_train_2(player):
             continue
 
         if action == "get to golm":
-            player.set_state(State.COFFEE)
+            player.set_state(State.NO_BOOK)
         else:
             invalid_input_reply()
 
@@ -331,6 +332,19 @@ def got_book(player):
             invalid_input_reply()
 
 
+def library_closed(player):
+    while player.get_state() is State.NO_BOOK:
+        action = input(">>> ").lower()
+        if standard_interactions(player, action):
+            continue
+
+        elif action == "get coffee":
+            player.set_state(State.COFFEE)
+            return
+        else:
+            invalid_input_reply()
+
+
 def replay(player):
     while player.get_state() is State.REPLAY:
         action = input(">>> ").lower()
@@ -396,6 +410,8 @@ def game_loop():
             second_riddle(player)
         elif state is State.GOT_BOOK:
             got_book(player)
+        elif state is State.NO_BOOK:
+            library_closed(player)
         elif state is State.REPLAY:
             replay(player)
 
