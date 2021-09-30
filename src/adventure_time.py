@@ -29,26 +29,22 @@ texts = {}
 
 
 class Player:
-    # TODO: 'name' is an optional feature yet to implement
-    # name = random.choice(["John", "Jane"])
     bag = {'money': 20, 'ticket': None, 'book': None}
     state = State.POTSDAM_HBF
-
-    # TODO: Only necessary if name field is used
-    # def __init__(self, name):
-    #     if name != "":
-    #         self.name = name
 
     def inspect_bag(self):
         print("Your bag contains:")
         print(f"➜ {self.bag['money']} euros")
         if self.bag['ticket'] is not None:
-            print(f"➜ a train ticket")
+            print("➜ a train ticket")
         if self.bag['book'] is not None:
-            print(f"➜ the book 'Analysis I for Computer Scientists'")
+            print("➜ the book 'Analysis I for Computer Scientists'")
 
     def get_state(self):
         return self.state
+
+    def get_state_str(self):
+        return self.state.name
 
     def set_state(self, state):
         self.state = state
@@ -59,8 +55,14 @@ class Player:
     def set_money(self, amount):
         self.bag['money'] = amount
 
+    def pay_ticket(self):
+        self.bag['money'] -= 5
+
     def put_ticket_into_bag(self):
         self.bag['ticket'] = True
+
+    def pay_fee(self):
+        self.bag['money'] -= 15
 
     def has_ticket(self):
         return self.bag['ticket'] is not None
@@ -77,7 +79,7 @@ def initialize_player():
 
 
 def scene_description(state):
-    print(texts[state.name]["opening"])
+    print(texts[state.name]["scene_description"])
 
 
 def query_player(state):
@@ -91,10 +93,10 @@ def potsdam_hbf(player):
             continue
 
         if action == "buy ticket":
-            print("OK, let's go buy a ticket!")
+            print(texts[player.get_state_str()][action])
             player.set_state(State.TICKET_AUTOMAT)
         elif action == "get train":
-            print("No ticket! Buy one first!")
+            print(texts[player.get_state_str()][action])
         else:
             print("Sorry, this action is not possible! Try something else.")
 
@@ -102,13 +104,6 @@ def potsdam_hbf(player):
 def first_riddle(player):
     start_time = time.time()
     while player.get_state() is State.TICKET_AUTOMAT:
-        current_time = time.time()
-        if current_time - start_time > 120:
-            player.set_state(State.TRAIN_2)
-            player.set_money(player.get_money() - 5)
-            player.put_ticket_into_bag()
-            continue
-
         alice = nltk.corpus.gutenberg.raw("carroll-alice.txt")
         alice = alice \
             .replace("\n", " ") \
@@ -160,8 +155,7 @@ def first_riddle(player):
             .replace(" n't", "n't")
 
         # start the 3 tries loop
-        print(f"»{output_sentence}«")
-        print("Can you guess the missing word?")
+        print(f"\t»{output_sentence}«")
         for i in range(0, 3):
             if player.get_state() is not State.TICKET_AUTOMAT:
                 break
@@ -173,21 +167,29 @@ def first_riddle(player):
 
             # put the cheating rule in place
             if answer == "###":
-                print("Okay, this time I'm gonna turn a blind eye.")
-                print(f"If you're interested, the solution was '{solution}'.")
+                print(f"{texts[player.get_state_str()][answer]} »{solution}«.")
 
             # if the right word was guessed, the player wins the riddle
             if answer == solution:
-                print(f"That's correct! It's »{solution}«. Here is your train ticket.")
+                print(texts[player.get_state_str()]['win'])
 
             # if solved, change state, add ticket to bag, and take money from player
             if answer in ["###", solution]:
-                player.set_state(State.TRAIN_1)
+                player.pay_ticket()
                 player.put_ticket_into_bag()
-                player.set_money(player.get_money() - 5)
-            else:
+
+                current_time = time.time()
+                if current_time - start_time > 120:
+                    player.set_state(State.TRAIN_2)
+                    return
+
+                player.set_state(State.TRAIN_1)
+                return
+            elif i < 2:
                 print("I'm sorry, that's not the searched word. Try again!")
-                print(f"»{output_sentence}«")
+                print(f"\t»{output_sentence}«")
+            else:
+                print("I'm sorry, that's still not the searched word. Here another sentence for you:")
 
 
 def on_train_1(player):
@@ -247,38 +249,10 @@ def fee(player):
             continue
 
         if action == "pay fee":
+            player.pay_fee()
             player.set_state(State.LIBRARY)
-            player.set_money(player.get_money() - 15)
         else:
             print("Sorry, this action is not possible! Try something else.")
-
-
-def got_book(player):
-    while player.get_state() is State.GOT_BOOK:
-        action = input(">>> ").lower()
-        if standard_interactions(player, action):
-            continue
-
-        if action == "read book":
-            player.set_state(State.BOOK)
-        elif action == "get coffee":
-            if player.get_money() > 0:
-                player.set_state(State.COFFEE)
-            else:
-                print("no money left for buying a coffee")
-        else:
-            print("Sorry, this action is not possible! Try something else.")
-
-
-def replay(player):
-    while player.get_state() is State.REPLAY:
-        action = input(">>> ").lower()
-        if action == "yes":
-            player.set_state(State.START)
-        elif action == "no":
-            player.set_state(State.EXIT)
-        else:
-            print("Sorry, I don't understand. Is this a 'yes' or a 'no'?")
 
 
 def second_riddle(player):
@@ -320,24 +294,51 @@ def second_riddle(player):
                 # if player's guess is the cheat
                 elif action == "###":
                     # animal gets revealed
-                    print(f"The animal was {animal_name}.")
-                    print("Congratulations! You cheated your way through this game, "
-                          "your parents must be proud. Go take your book")
+                    print(f"The animal was: {animal_name}")
+                    print(texts[player.get_state_str()][action])
                 # if player's guess is the random animal
                 elif action == animal_name:
                     # they won the game and get the book
-                    print("Congratulations! You guessed the animal! Now you can finally "
-                          "take the book home with you ")
+                    print(texts[player.get_state_str()]["win"])
 
                 if action in [animal_name, "###"]:
                     player.put_book_into_bag()
                     player.set_state(State.GOT_BOOK)
-                    continue
+                    return
                 else:
                     print("Unfortunately that's not the searched animal. Have another guess!")
 
-            if player.get_state() is State.LIBRARY:
-                print(f"The animal was {animal_name}. Here is a new animal to guess. Good Luck.")
+            print(f"The animal was {animal_name}. Here a new animal to guess. Good Luck!")
+
+
+def got_book(player):
+    while player.get_state() is State.GOT_BOOK:
+        action = input(">>> ").lower()
+        if standard_interactions(player, action):
+            continue
+
+        if action == "read book":
+            player.set_state(State.BOOK)
+            return
+        elif action == "get coffee":
+            if player.get_money() > 0:
+                player.set_state(State.COFFEE)
+                return
+            else:
+                print(texts[player.get_state_str()]["no_money"])
+        else:
+            print("Sorry, this action is not possible! Try something else.")
+
+
+def replay(player):
+    while player.get_state() is State.REPLAY:
+        action = input(">>> ").lower()
+        if action == "yes":
+            player.set_state(State.START)
+        elif action == "no":
+            player.set_state(State.EXIT)
+        else:
+            print(texts[player.get_state_str()]["no_option"])
 
 
 def standard_interactions(player, action):
@@ -358,21 +359,19 @@ def game_loop():
 
     # The main game loop
     while True:
-        if state is State.EXIT:
-            scene_description(state)
-            break
-
         if state is State.START:
             player = initialize_player()
             state = player.get_state()
 
-        if state in [State.BOOK, State.COFFEE]:
-            scene_description(state)
-            player.set_state(State.REPLAY)
-            state = player.get_state()
-            continue
-
         scene_description(state)
+
+        if state is State.EXIT:
+            return
+
+        if state in [State.BOOK, State.COFFEE]:
+            state = State.REPLAY
+            player.set_state(state)
+
         query_player(state)
 
         if state is State.POTSDAM_HBF:

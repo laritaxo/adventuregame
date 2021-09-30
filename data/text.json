@@ -1,51 +1,59 @@
 {
   "START": {
-    "opening": "START opening text",
+    "scene_description": "START scene_description text",
     "query": "START query text"
   },
   "POTSDAM_HBF": {
-    "opening": "You are sitting on a bench at the tram station at Potsdam Central Station.\nYou look at the timetable and see that your tram will arrive in 7 minutes.\nYou close your eyes and feel the sunlight on your face.\nWhen suddenly…\nYou remember that you forgot that you didn't got the book from the library after your course.\nYou need the book to study for next week's exam.\n",
+    "scene_description": "You are sitting on a bench at the tram station at Potsdam Central Station.\nYou look at the timetable and see that your tram will arrive in 7 minutes.\nYou close your eyes and feel the sunlight on your face.\nWhen suddenly…\nYou remember that you forgot that you didn't got the book from the library after your course.\nYou need the book to study for next week's exam.\n",
     "query": "Do you want to hurry and go get the next train to Golm before the library closes?",
-    "train": "It seems like you've lost your semester ticket.\nYou need to buy a ticket to get on the train.\nWhat do you wanna do?\n"
+    "buy ticket": "Okay, let's do that!\n",
+    "get train": "It seems like you've lost your semester ticket.\nYou need to buy a ticket to get on the train.\nWhat do you wanna do?"
   },
   "TICKET_AUTOMAT": {
-    "opening": "Welcome to the ticket machine.\nA ticket to Golm and back to the central station costs 5€, but you have to guess the missing word first.",
-    "query": "TICKET_AUTOMAT query text"
+    "scene_description": "Welcome to the ticket machine.",
+    "query": "A ticket to Golm and back costs 5€, but to get one you first have guess the missing word in the following sentence:",
+    "###": "Okay, this time I'm gonna turn a blind eye.\nIf you're interested, the solution was:",
+    "win": "That's correct! Here is your train ticket."
   },
   "TRAIN_1": {
-    "opening": "Good thing you bought your ticket. Now you can get on the train.",
-    "query": "TRAIN_1 query text"
+    "scene_description": "You solved the game really fast! You hurry to the platform. Luckily, the next train to Golm is just waiting there.",
+    "query": "What do you wanna do next?"
   },
   "TRAIN_2": {
-    "opening": "Good job on finding the word!\nSadly you missed the first train, but the second one is here so get on.",
-    "query": "Where do you wanna get to?"
+    "scene_description": "Good job on finding the word!\nSadly, it took you pretty long and you missed the first train, but the next one is just entering the station and you enter it.",
+    "query": "What's next?"
   },
   "TICKET_CONTROL": {
-    "opening": "SURPRISE! You got into a ticket control.",
-    "query": "Do you wanna show your ticket?"
+    "scene_description": "SURPRISE! It must be your lucky day! You got into a ticket control.",
+    "query": "What to do about it?"
   },
   "FEE": {
-    "opening": "It seems that you didn't validate your ticket before getting on the train.\nYou need to pay a 15€ fee.\n",
+    "scene_description": "It seems, (since you're not used to buy any) that you didn't validate your ticket before getting on the train.\nNow you need to pay a 15€ fee.",
     "query": "What do you wanna do?"
   },
   "LIBRARY": {
-    "opening": "You need to hurry! The library will close soon.",
-    "query": "Guess the animal and you will get your book."
+    "scene_description": "Finally you arrived at the library and that just on time. Now you need to hurry, because the library is about to close soon.",
+    "query": "Guess the animal by its definition and you will get your book.",
+    "###": "Congratulations! You cheated your way through this game! Your parents must be pretty proud.\nGo take your book!",
+    "win": "Congratulations! You guessed the animal! Now you can finally take the book home with you."
+  },
+  "GOT_BOOK": {
+    "scene_description": "Yay! You made it and got the book just in time! Now it's time to relax a bit.",
+    "query": "What are you up for?",
+    "no_money": "Unfortunately you already spent all your money, so you haven't any left for a coffee.\nWhat else can you think of to do?"
   },
   "COFFEE": {
-    "opening": "Here is your coffee, I hope it tastes good.",
-    "query": "COFFEE query text"
+    "scene_description": "Here is your coffee, I hope it tastes good."
   },
   "BOOK": {
-    "opening": "You sit down to read your book.",
-    "query": "BOOK query text"
+    "scene_description": "You sit down to read your book."
   },
   "REPLAY": {
-    "opening": "Congratulations: You finished the game!",
-    "query": "Do you wanna play another round?"
+    "scene_description": "Congratulations: You finished the game!",
+    "query": "Do you wanna play another round?",
+    "no_option": "Sorry, I don't understand. Is this a 'yes' or a 'no'?"
   },
   "EXIT": {
-    "opening": "Good Bye! It was nice playing with you",
-    "query": "EXIT query text"
+    "scene_description": "Good Bye! It was nice playing with you"
   }
 }
