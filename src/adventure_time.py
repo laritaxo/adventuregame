@@ -181,7 +181,7 @@ def first_riddle(player):
         # generate pos tags for all words in the sentence
         pos_tag_list = nltk.pos_tag(word_tokens)
 
-        # get the pos for searched word
+        # get the pos tag for the searched word
         pos_tag_of_word = f"{pos_tag_list[random_word_index][1]}"
 
         # replace the searched word with its pos tag
