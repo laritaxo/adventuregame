@@ -102,6 +102,12 @@ class Player:
     def has_ticket(self):
         return self.bag['ticket'] is not None
 
+    def put_book_into_bag(self):
+        self.bag['book'] = True
+
+    def has_book(self):
+        return self.bag['book'] is not None
+
 
 def initialize_player():
     return Player()
@@ -182,23 +188,24 @@ def first_riddle(player):
         # print the sentence
         print(f'The answer is "{solution}"')
         for i in range(0, 3):
+            if player.get_state() is not State.TICKET_AUTOMAT:
+                break
             if i == 0:
                 print('Can you guess the missing word?')
             else:
                 print('Have another try.')
             print(output_sentence)
             answer = input(">>> ").lower()
+            standard_interactions(player, answer)
             # put the cheating rule in place
             if answer == '###':
                 print("Okay, this time I'm gonna turn a blind eye."
                       f"If you're interested, the solution was '{solution}'.")
                 player.set_state(State.TRAIN_1)
-                break
-            # if the right word was guessed you get won the riddle
+            # if the right word was guessed, you win the riddle
             if answer == solution:
-                print(f"You're right! The word was {solution}, here is your trainticket.")
+                print(f"That's correct! It's '{solution}'. Here is your trainticket.")
                 player.set_state(State.TRAIN_1)
-                break
             else:
                 print("I'm sorry that's not the word. Try again!")
 
@@ -301,6 +308,7 @@ def standard_interactions(player, action):
 def game_loop():
     # Set game's state initially to START
     state = State.START
+    player = None
 
     # The main game loop
     while True:
@@ -311,7 +319,6 @@ def game_loop():
         if state is State.START:
             player = initialize_player()
             state = player.get_state()
-            print(player.get_state())
 
         if state in [State.BOOK, State.COFFEE]:
             scene_description(state)
@@ -336,8 +343,6 @@ def game_loop():
             fee(player)
         elif state is State.LIBRARY:
             library(player)
-        elif state is State.REPLAY:
-            replay(player)
 
         state = player.get_state()
 
