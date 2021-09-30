@@ -31,8 +31,12 @@ class State(Enum):
 
 
 class Player:
-    bag = {'money': 20, 'ticket': False, 'book': False}
-    state = State.POTSDAM_HBF
+    bag = {}
+    state = None
+
+    def __init__(self):
+        self.bag = {'money': 20, 'ticket': False, 'book': False}
+        self.state = State.POTSDAM_HBF
 
     def inspect_bag(self):
         print("Your bag contains:")
@@ -212,6 +216,13 @@ def on_train_1(player):
 
 
 def on_train_2(player):
+    """
+    This function queries the player what to do on the second train.
+    When the player chooses "get to golm" their state is changed to
+    NO_BOOK.
+
+    :param player: instance of Player
+    """
     while player.get_state() is State.TRAIN_2:
         action = input(">>> ").lower()
         if standard_interactions(player, action):
@@ -257,7 +268,7 @@ def fee(player):
 
 def second_riddle(player):
     """
-    This function starts the second game in which the player has to guess the animal
+    This function starts the second riddle in which the player has to guess the animal
     just by reading the definition of it. The player gets 3 guesses for each randomly
     chosen animal. If the player guesses the animal correct or puts in the cheat "###"
     they win the game and get the book from the library. Else the game goes on til the
@@ -380,7 +391,7 @@ def game_loop():
     # the main game loop
     while True:
         if state is State.START:
-            player = initialize_player()
+            player = Player()
             state = player.get_state()
 
         scene_description(state)
