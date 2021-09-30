@@ -7,6 +7,7 @@ from nltk.corpus import wordnet as wn
 import time
 import csv
 import json
+import os
 
 
 texts = {}
@@ -431,10 +432,13 @@ def game_loop():
 
 def main():
     global texts
-    with open("../data/texts.json", "r") as texts_json:
+    wdir = os.path.dirname(__file__)
+    ddir = os.path.join(wdir, "../data")
+    print(ddir)
+    with open(f"{ddir}/texts.json", "r") as texts_json:
         texts = json.load(texts_json)
     global invalid
-    with open("../data/invalid.json", "r") as invalid_json:
+    with open(f"{ddir}/invalid.json", "r") as invalid_json:
         invalid = json.load(invalid_json)
     game_loop()
 
