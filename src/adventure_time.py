@@ -280,7 +280,9 @@ def second_riddle(player):
     """
 
     # open animal.csv file
-    with open('../data/animals.csv', 'r') as file:
+    wdir = os.path.dirname(__file__)
+    ddir = os.path.join(wdir, "../data")
+    with open(f"{ddir}/animals.csv", "r") as file:
         # read animals.csv
         reader = csv.reader(file)
         animal_list = list(reader)
